@@ -162,14 +162,14 @@ module Paperclip
       end
         
       def file_contents(style)
-        file_for(style).file_contents
+        Base64.decode64(file_for(style).file_contents)
       end
  
       def flush_writes
         ActiveRecord::Base.logger.info("[paperclip] Writing files for #{name}")
         @queued_for_write.each do |style, file|
           paperclip_file = instance.send(@paperclip_files).send(:find_or_create_by_style, style.to_s)
-          paperclip_file.file_contents = file.read
+          paperclip_file.file_contents = Base64.encode64(file.read)
           paperclip_file.save!
           instance.reload
         end        
